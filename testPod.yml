@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hello-server
+  name: hello-server
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-server
+  template:
+    metadata:
+      labels:
+        app: hello-server
+    spec:
+      nodeSelector:
+        role: app
+      containers:
+      - image: localhost:5001/nginx
+        imagePullPolicy: IfNotPresent
+        name: hello-app

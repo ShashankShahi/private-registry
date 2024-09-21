@@ -1,0 +1,4 @@
+reg_name='registry-server'
+if [ "$(docker inspect -f='{{json .NetworkSettings.Networks.kind}}' "${reg_name}")" = 'null' ]; then
+  docker network connect "kind" "${reg_name}"
+fi
