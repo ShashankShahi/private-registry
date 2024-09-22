@@ -45,8 +45,6 @@ spec:
           value: "[HEAD,GET,OPTIONS,DELETE]"
         - name: REGISTRY_HTTP_HEADERS_Access-Control-Allow-Headers
           value: "[Authorization,Accept,Cache-Control]"
-        - name: REGISTRY_HTTP_HEADERS_Access-Control-Credentials
-          value: "[true]"
       volumes:
       - name: repo-vol
         persistentVolumeClaim:
