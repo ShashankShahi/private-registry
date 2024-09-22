@@ -1,17 +1,20 @@
 kind_cluster_name="kube-cluster"
-reg_port='31456'
-REGISTRY_DIR="/etc/containerd/certs.d/localhost:${reg_port}"
+reg_name='my-registry'
+REGISTRY_DIR="/etc/containerd/certs.d/${reg_name}:5000"
 cluster_ip=$(kubectl get svc docker-registry -o jsonpath='{.spec.clusterIP}')
 HOST_ENTRY="${cluster_ip} my-registry"
 for node in $(kind get nodes --name ${kind_cluster_name}); do
   docker exec "${node}" mkdir -p "${REGISTRY_DIR}"
+  docker exec "${node}" rm -rf "${REGISTRY_DIR}/*"
   docker cp /Users/shashankshahi/kubernetes/registry/certs/tls.crt "${node}":"${REGISTRY_DIR}/tls.crt"
-  docker exec "${node}" chmod 755 "${REGISTRY_DIR}/tls.crt"
-  docker exec "${node}" update-ca-certificates
+  docker cp /Users/shashankshahi/kubernetes/registry/certs/tls.crt "${node}":/etc/share/ca-certificates/tls.crt"
   cat <<EOF | docker exec -i "${node}" cp /dev/stdin "${REGISTRY_DIR}/hosts.toml"
 [host."http://${reg_name}:5000"]
 EOF
-  docker exec "${node}" bash -c  echo "'$HOST_ENTRY' >> /etc/hosts"
+  docker exec "${node}" chmod 755 "${REGISTRY_DIR}/tls.crt" "${REGISTRY_DIR}/hosts.toml"
+  docker exec "${node}" update-ca-certificates
+  sudo docker exec "${node}" bash -c "echo '$HOST_ENTRY' >> /etc/hosts"
   echo "Added entry '$HOST_ENTRY' to $node."
+  cat /etc/hosts
   docker exec "${node}" systemctl restart containerd
 done
