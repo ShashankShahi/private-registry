@@ -1,4 +1,4 @@
-# private-registry
+# private-docker-registry in kind cluster following all standards i.e with tls certs and authentication.
 
 ## certificate command
 openssl req -x509 -newkey rsa:4096 -days 365 -nodes -sha256 -keyout certs/tls.key -out certs/tls.crt -subj "/CN=my-registry" -addext "subjectAltName= DNS:my-registry"
