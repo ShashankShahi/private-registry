@@ -9,7 +9,7 @@ for node in $(kind get nodes --name ${kind_cluster_name}); do
   docker cp /Users/shashankshahi/kubernetes/registry/certs/tls.crt "${node}":"${REGISTRY_DIR}/tls.crt"
   docker cp /Users/shashankshahi/kubernetes/registry/certs/tls.crt "${node}":/etc/share/ca-certificates/tls.crt"
   cat <<EOF | docker exec -i "${node}" cp /dev/stdin "${REGISTRY_DIR}/hosts.toml"
-[host."http://${reg_name}:5000"]
+[host."https://${reg_name}:5000"]
 EOF
   docker exec "${node}" chmod 755 "${REGISTRY_DIR}/tls.crt" "${REGISTRY_DIR}/hosts.toml"
   docker exec "${node}" update-ca-certificates

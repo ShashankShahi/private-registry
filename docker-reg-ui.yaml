@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: registry-ui
+  labels:
+    app: registry-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: registry-ui
+  template:
+    metadata:
+      labels:
+        app: registry-ui
+    spec:
+      containers:
+      - name: registry-ui
+        image: my-registry:5000/docker-registry-ui:main
+        ports:
+        - containerPort: 80
+        env:
+        - name: REGISTRY_TITLE
+          value: "My Docker Registry"
+        - name: REGISTRY_URL
+          value: "https://my-registry:5000"
+        - name: DELETE_IMAGES
+          value: "true"
+        - name: SHOW_CONTENT_DIGEST
+          value: "true"
+        - name: SHOW_CATALOG_NB_TAGS
+          value: "true"
+        - name: CATALOG_MIN_BRANCHES
+          value: "1"
+        - name: CATALOG_MAX_BRANCHES
+          value: "1"
+        - name: TAGLIST_PAGE_SIZE
+          value: "100"
+        - name: REGISTRY_SECURED
+          value: "true"
+        - name: CATALOG_ELEMENTS_LIMIT
+          value: "1000"
+      imagePullSecrets:
+      - name: nginx-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: registry-ui
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30080
+  selector:
+    app: registry-ui
